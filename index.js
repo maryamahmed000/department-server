@@ -1,18 +1,23 @@
 // index.js
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const authRoutes = require('./authRoutes');
 
-const app = express(); // ✅ تعريف app قبل استخدامه
+const app = express();
 
-app.use(cors()); // ✅ تفعيل CORS للسماح بالاتصال من الواجهة
-app.use(express.json()); // ✅ لتحليل JSON من الطلبات
+app.use(cors());
+app.use(express.json());
 
-// ✅ استخدام المسارات (Routes)
 app.use('/api', authRoutes);
 
-// ✅ تشغيل السيرفر
-const PORT = 5000;
+// ⭐ إضافة خدمة ملفات الواجهة الأمامية
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
+});
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
